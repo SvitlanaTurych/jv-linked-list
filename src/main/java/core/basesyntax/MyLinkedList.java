@@ -23,33 +23,26 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
 
     @Override
     public void add(T value, int index) {
-        Node<T> newNode = new Node<>(value);
+        Node<T> newNode = new Node<>(value, null, null);
         checkIndexForAdd(index);
         if (head == null) {
             head = newNode;
             tail = newNode;
-            size++;
-            return;
-        }
-        if (index == size) {
+        } else if (index == size) {
             newNode.prev = tail;
             tail.next = newNode;
             tail = newNode;
-            size++;
-            return;
-        }
-        if (index == 0) {
+        } else if (index == 0) {
             newNode.next = head;
             head.prev = newNode;
             head = newNode;
-            size++;
-            return;
+        } else {
+            Node<T> current = findNodeByIndex(index);
+            newNode.next = current;
+            newNode.prev = current.prev;
+            current.prev.next = newNode;
+            current.prev = newNode;
         }
-        Node<T> current = findNodeByIndex(index);
-        newNode.next = current;
-        newNode.prev = current.prev;
-        current.prev.next = newNode;
-        current.prev = newNode;
         size++;
     }
 
@@ -90,17 +83,10 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
     public boolean remove(T object) {
         Node<T> newNode = head;
         for (int i = 0; i < size; i++) {
-            if (object == null) {
-                if (newNode.element == null) {
-                    unlink(newNode);
-                    return true;
-                }
-            }
-            if (object != null) {
-                if (object.equals(newNode.element)) {
-                    unlink(newNode);
-                    return true;
-                }
+            if ((object == null && newNode.element == null)
+                    || (object != null && object.equals(newNode.element))) {
+                unlink(newNode);
+                return true;
             }
             newNode = newNode.next;
         }
@@ -178,10 +164,6 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
             this.element = element;
             this.next = next;
             this.prev = prev;
-        }
-
-        Node(T element) {
-            this.element = element;
         }
     }
 }
